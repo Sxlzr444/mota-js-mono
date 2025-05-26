@@ -1,50 +1,7 @@
 var events_c12a15a8_c380_4b28_8144_256cba95f760 = 
 {
 	"commonEvent": {
-		"加点事件": [
-			{
-				"type": "comment",
-				"text": "通过传参，flag:arg1 表示当前应该的加点数值"
-			},
-			{
-				"type": "choices",
-				"choices": [
-					{
-						"text": "攻击+${1*flag:arg1}",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:atk",
-								"operator": "+=",
-								"value": "1*flag:arg1"
-							}
-						]
-					},
-					{
-						"text": "防御+${2*flag:arg1}",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:def",
-								"operator": "+=",
-								"value": "2*flag:arg1"
-							}
-						]
-					},
-					{
-						"text": "生命+${200*flag:arg1}",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:hp",
-								"operator": "+=",
-								"value": "200*flag:arg1"
-							}
-						]
-					}
-				]
-			}
-		],
+		"加点事件": [],
 		"回收钥匙商店": [
 			{
 				"type": "comment",
@@ -141,6 +98,162 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 						]
 					}
 				]
+			}
+		],
+		"商店事件": [
+			{
+				"type": "if",
+				"condition": "(flag:KaimonoTimes==0)",
+				"true": [
+					{
+						"type": "setValue",
+						"name": "flag:KaimonoTimes",
+						"value": "1"
+					}
+				]
+			},
+			{
+				"type": "setValue",
+				"name": "flag:KaimonoCost",
+				"value": "20+10*flag:KaimonoTimes*(flag:KaimonoTimes-1)"
+			},
+			{
+				"type": "choices",
+				"text": "\t[祭坛,moneyShop]如果供奉${flag:KaimonoCost}金币, 便可以增加你的力量, 你想要什么呢…",
+				"choices": [
+					{
+						"text": "生命+${100*flag:KaimonoTimes}",
+						"action": [
+							{
+								"type": "if",
+								"condition": "(status:money>=flag:KaimonoCost)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "flag:KaimonoCost"
+									},
+									{
+										"type": "setValue",
+										"name": "status:hp",
+										"operator": "+=",
+										"value": "100*flag:KaimonoTimes"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:KaimonoTimes",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "insert",
+										"name": "商店事件"
+									}
+								],
+								"false": [
+									"\t[祭坛,moneyShop]你的金币不足！",
+									{
+										"type": "exit"
+									}
+								]
+							}
+						]
+					},
+					{
+						"text": "攻击+${2*flag:KaimonoLevel}",
+						"action": [
+							{
+								"type": "if",
+								"condition": "(status:money>=flag:KaimonoCost)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "flag:KaimonoCost"
+									},
+									{
+										"type": "setValue",
+										"name": "status:atk",
+										"operator": "+=",
+										"value": "2*flag:KaimonoLevel"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:KaimonoTimes",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "insert",
+										"name": "商店事件"
+									}
+								],
+								"false": [
+									"\t[祭坛,moneyShop]你的金币不足！",
+									{
+										"type": "exit"
+									}
+								]
+							}
+						]
+					},
+					{
+						"text": "防御+${4*flag:KaimonoLevel}",
+						"action": [
+							{
+								"type": "if",
+								"condition": "(status:money>=flag:KaimonoCost)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "flag:KaimonoCost"
+									},
+									{
+										"type": "setValue",
+										"name": "status:def",
+										"operator": "+=",
+										"value": "4*flag:KaimonoLevel"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:KaimonoTimes",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "insert",
+										"name": "商店事件"
+									}
+								],
+								"false": [
+									"\t[祭坛,moneyShop]你的金币不足！",
+									{
+										"type": "exit"
+									}
+								]
+							}
+						]
+					},
+					{
+						"text": "再见！",
+						"action": [
+							{
+								"type": "exit"
+							}
+						]
+					}
+				]
+			}
+		],
+		"加点花费计算": [
+			{
+				"type": "setValue",
+				"name": "flag:kaimonoCost",
+				"value": "Math.floor((flag:kaimonoTimes**1.5+1)*10)"
 			}
 		]
 	}

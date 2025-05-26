@@ -1,73 +1,72 @@
-///<reference path='../runtime.d.ts'/>
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 		this._afterLoadResources = function () {
 			// 本函数将在所有资源加载完毕后，游戏开启前被执行
 		}
 	},
-	"drawLight": function () {
+    "drawLight": function () {
 
-		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
-		// 【参数说明】
-		// name：必填，要绘制到的画布名；可以是一个系统画布，或者是个自定义画布；如果不存在则创建
-		// color：可选，只能是一个0~1之间的数，为不透明度的值。不填则默认为0.9。
-		// lights：可选，一个数组，定义了每个独立的灯光。
-		//        其中每一项是三元组 [x,y,r] x和y分别为该灯光的横纵坐标，r为该灯光的半径。
-		// lightDec：可选，0到1之间，光从多少百分比才开始衰减（在此范围内保持全亮），不设置默认为0。
-		//        比如lightDec为0.5代表，每个灯光部分内圈50%的范围全亮，50%以后才开始快速衰减。
-		// 【调用样例】
-		// core.plugin.drawLight('curtain'); // 在curtain层绘制全图不透明度0.9，等价于更改画面色调为[0,0,0,0.9]。
-		// core.plugin.drawLight('ui', 0.95, [[25,11,46]]); // 在ui层绘制全图不透明度0.95，其中在(25,11)点存在一个半径为46的灯光效果。
-		// core.plugin.drawLight('test', 0.2, [[25,11,46,0.1]]); // 创建一个test图层，不透明度0.2，其中在(25,11)点存在一个半径为46的灯光效果，灯光中心不透明度0.1。
-		// core.plugin.drawLight('test2', 0.9, [[25,11,46],[105,121,88],[301,221,106]]); // 创建test2图层，且存在三个灯光效果，分别是中心(25,11)半径46，中心(105,121)半径88，中心(301,221)半径106。
-		// core.plugin.drawLight('xxx', 0.3, [[25,11,46],[105,121,88,0.2]], 0.4); // 存在两个灯光效果，它们在内圈40%范围内保持全亮，40%后才开始衰减。
-		this.drawLight = function (name, color, lights, lightDec) {
+	// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
+	// 【参数说明】
+	// name：必填，要绘制到的画布名；可以是一个系统画布，或者是个自定义画布；如果不存在则创建
+	// color：可选，只能是一个0~1之间的数，为不透明度的值。不填则默认为0.9。
+	// lights：可选，一个数组，定义了每个独立的灯光。
+	//        其中每一项是三元组 [x,y,r] x和y分别为该灯光的横纵坐标，r为该灯光的半径。
+	// lightDec：可选，0到1之间，光从多少百分比才开始衰减（在此范围内保持全亮），不设置默认为0。
+	//        比如lightDec为0.5代表，每个灯光部分内圈50%的范围全亮，50%以后才开始快速衰减。
+	// 【调用样例】
+	// core.plugin.drawLight('curtain'); // 在curtain层绘制全图不透明度0.9，等价于更改画面色调为[0,0,0,0.9]。
+	// core.plugin.drawLight('ui', 0.95, [[25,11,46]]); // 在ui层绘制全图不透明度0.95，其中在(25,11)点存在一个半径为46的灯光效果。
+	// core.plugin.drawLight('test', 0.2, [[25,11,46,0.1]]); // 创建一个test图层，不透明度0.2，其中在(25,11)点存在一个半径为46的灯光效果，灯光中心不透明度0.1。
+	// core.plugin.drawLight('test2', 0.9, [[25,11,46],[105,121,88],[301,221,106]]); // 创建test2图层，且存在三个灯光效果，分别是中心(25,11)半径46，中心(105,121)半径88，中心(301,221)半径106。
+	// core.plugin.drawLight('xxx', 0.3, [[25,11,46],[105,121,88,0.2]], 0.4); // 存在两个灯光效果，它们在内圈40%范围内保持全亮，40%后才开始衰减。
+	this.drawLight = function (name, color, lights, lightDec) {
 
-			// 清空色调层；也可以修改成其它层比如animate/weather层，或者用自己创建的canvas
-			var ctx = core.getContextByName(name);
-			if (ctx == null) {
-				if (typeof name == 'string')
-					ctx = core.createCanvas(name, 0, 0, core._PX_ || core.__PIXELS__, core._PY_ || core.__PIXELS__, 98);
-				else return;
-			}
-
-			ctx.mozImageSmoothingEnabled = false;
-			ctx.webkitImageSmoothingEnabled = false;
-			ctx.msImageSmoothingEnabled = false;
-			ctx.imageSmoothingEnabled = false;
-
-			core.clearMap(name);
-			// 绘制色调层，默认不透明度
-			if (color == null) color = 0.9;
-			ctx.fillStyle = "rgba(0,0,0," + color + ")";
-			ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-			lightDec = core.clamp(lightDec, 0, 1);
-
-			// 绘制每个灯光效果
-			ctx.globalCompositeOperation = 'destination-out';
-			lights.forEach(function (light) {
-				// 坐标，半径，中心不透明度
-				var x = light[0],
-					y = light[1],
-					r = light[2];
-				// 计算衰减距离
-				var decDistance = parseInt(r * lightDec);
-				// 正方形区域的直径和左上角坐标
-				var grd = ctx.createRadialGradient(x, y, decDistance, x, y, r);
-				grd.addColorStop(0, "rgba(0,0,0,1)");
-				grd.addColorStop(1, "rgba(0,0,0,0)");
-				ctx.beginPath();
-				ctx.fillStyle = grd;
-				ctx.arc(x, y, r, 0, 2 * Math.PI);
-				ctx.fill();
-			});
-			ctx.globalCompositeOperation = 'source-over';
-			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
+		// 清空色调层；也可以修改成其它层比如animate/weather层，或者用自己创建的canvas
+		var ctx = core.getContextByName(name);
+		if (ctx == null) {
+			if (typeof name == 'string')
+				ctx = core.createCanvas(name, 0, 0, core._PX_ || core.__PIXELS__, core._PY_ || core.__PIXELS__, 98);
+			else return;
 		}
-	},
-	"shop": function () {
+
+		ctx.mozImageSmoothingEnabled = false;
+		ctx.webkitImageSmoothingEnabled = false;
+		ctx.msImageSmoothingEnabled = false;
+		ctx.imageSmoothingEnabled = false;
+
+		core.clearMap(name);
+		// 绘制色调层，默认不透明度
+		if (color == null) color = 0.9;
+		ctx.fillStyle = "rgba(0,0,0," + color + ")";
+		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+		lightDec = core.clamp(lightDec, 0, 1);
+
+		// 绘制每个灯光效果
+		ctx.globalCompositeOperation = 'destination-out';
+		lights.forEach(function (light) {
+			// 坐标，半径，中心不透明度
+			var x = light[0],
+				y = light[1],
+				r = light[2];
+			// 计算衰减距离
+			var decDistance = parseInt(r * lightDec);
+			// 正方形区域的直径和左上角坐标
+			var grd = ctx.createRadialGradient(x, y, decDistance, x, y, r);
+			grd.addColorStop(0, "rgba(0,0,0,1)");
+			grd.addColorStop(1, "rgba(0,0,0,0)");
+			ctx.beginPath();
+			ctx.fillStyle = grd;
+			ctx.arc(x, y, r, 0, 2 * Math.PI);
+			ctx.fill();
+		});
+		ctx.globalCompositeOperation = 'source-over';
+		// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
+	}
+},
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -262,7 +261,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -349,7 +348,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -503,7 +502,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -809,7 +808,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"enemyLevel": function () {
+    "enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -895,7 +894,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText('ui', core.formatBigNumber(enemy.def || 0), col3 + 30, position, /* [255, 0, 0, 1] */ null, b13);
 		}
 	},
-	"multiHeros": function () {
+    "multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -1041,7 +1040,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -1094,7 +1093,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"routeFixing": function () {
+    "routeFixing": function () {
 		// 是否开启本插件，true 表示启用，false 表示禁用。
 		var __enable = true;
 		if (!__enable) return;
@@ -1185,7 +1184,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}, 100);
 	},
-	"numpad": function () {
+    "numpad": function () {
 		// 样板自带的整数输入事件为白屏弹窗且可以误输入任意非法内容但不支持负整数，观感较差。本插件可以将其美化成仿RM样式，使其支持负整数同时带有音效
 		// 另一方面，4399等第三方平台不允许使用包括 core.myprompt() 和 core.myconfirm() 在内的弹窗，因此也需要此插件来替代，不然类似生命魔杖的道具就不好实现了
 		// 关于负整数输入，V2.8.2原生支持其录像的压缩和解压，只是默认的 core.events._action_input() 函数将负数取了绝对值，可以只复写下面的 core.isReplaying() 部分来取消
@@ -1360,460 +1359,859 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"sprites": function () {
-		// 基于canvas的sprite化，摘编整理自万宁魔塔
-		// 
-		// ---------------------------------------- 第一部分 js代码 （必装） --------------------------------------- //
+    "sprites": function () {
+	// 基于canvas的sprite化，摘编整理自万宁魔塔
+	// 
+	// ---------------------------------------- 第一部分 js代码 （必装） --------------------------------------- //
 
-		/* ---------------- 用法说明 ---------------- *
-		 * 1. 创建sprite: var sprite = new Sprite(x, y, w, h, z, reference, name);
-		 *   其中x y w h为画布的横纵坐标及长宽，reference为参考系，只能填game（相对于游戏画面）和window（相对于窗口）
-		 *   且当为相对游戏画面时，长宽与坐标将会乘以放缩比例（相当于用createCanvas创建）
-		 *   z为纵深，表示不同元素之间的覆盖关系，大的覆盖小的
-		 *   name为自定义名称，可以不填
-		 * 2. 删除: sprite.destroy();
-		 * 3. 设置css特效: sprite.setCss(css);
-		 *   其中css直接填 box-shadow: 0px 0px 10px black;的形式即可，与style标签与css文件内写法相同
-		 *   对于已设置的特效，如果之后不需要再次设置，可以不填
-		 * 4. 添加事件监听器: sprite.addEventListener(); 用法与html元素的addEventListener完全一致
-		 * 5. 移除事件监听器: sprite.removeEventListener(); 用法与html元素的removeEventListener完全一致
-		 * 6. 属性列表
-		 *   (1) sprite.x | sprite.y | sprite.width | sprite.height | sprite.zIndex | sprite.reference 顾名思义
-		 *   (2) sprite.canvas 该sprite的画布
-		 *   (3) sprite.context 该画布的CanvasRenderingContext2d对象，即样板中常见的ctx
-		 *   (4) sprite.count 不要改这个玩意
-		 * 7. 使用样板api进行绘制
-		 *   示例：
-		 *   var ctx = sprite.context;
-		 *   core.fillText(ctx, 'xxx', 100, 100);
-		 *   core.fillRect(ctx, 0, 0, 50, 50);
-		 *   当然也可以使用原生js
-		 *   ctx.moveTo(0, 0);
-		 *   ctx.bezierCurveTo(50, 50, 100, 0, 100, 50);
-		 *   ctx.stroke();
-		 * ---------------- 用法说明 ---------------- */
+	/* ---------------- 用法说明 ---------------- *
+	 * 1. 创建sprite: var sprite = new Sprite(x, y, w, h, z, reference, name);
+	 *   其中x y w h为画布的横纵坐标及长宽，reference为参考系，只能填game（相对于游戏画面）和window（相对于窗口）
+	 *   且当为相对游戏画面时，长宽与坐标将会乘以放缩比例（相当于用createCanvas创建）
+	 *   z为纵深，表示不同元素之间的覆盖关系，大的覆盖小的
+	 *   name为自定义名称，可以不填
+	 * 2. 删除: sprite.destroy();
+	 * 3. 设置css特效: sprite.setCss(css);
+	 *   其中css直接填 box-shadow: 0px 0px 10px black;的形式即可，与style标签与css文件内写法相同
+	 *   对于已设置的特效，如果之后不需要再次设置，可以不填
+	 * 4. 添加事件监听器: sprite.addEventListener(); 用法与html元素的addEventListener完全一致
+	 * 5. 移除事件监听器: sprite.removeEventListener(); 用法与html元素的removeEventListener完全一致
+	 * 6. 属性列表
+	 *   (1) sprite.x | sprite.y | sprite.width | sprite.height | sprite.zIndex | sprite.reference 顾名思义
+	 *   (2) sprite.canvas 该sprite的画布
+	 *   (3) sprite.context 该画布的CanvasRenderingContext2d对象，即样板中常见的ctx
+	 *   (4) sprite.count 不要改这个玩意
+	 * 7. 使用样板api进行绘制
+	 *   示例：
+	 *   var ctx = sprite.context;
+	 *   core.fillText(ctx, 'xxx', 100, 100);
+	 *   core.fillRect(ctx, 0, 0, 50, 50);
+	 *   当然也可以使用原生js
+	 *   ctx.moveTo(0, 0);
+	 *   ctx.bezierCurveTo(50, 50, 100, 0, 100, 50);
+	 *   ctx.stroke();
+	 * ---------------- 用法说明 ---------------- */
 
-		var count = 0;
+	var count = 0;
 
-		/** 创建一个sprite画布
-		 * @param {number} x
-		 * @param {number} y
-		 * @param {number} w
-		 * @param {number} h
-		 * @param {number} z
-		 * @param {'game' | 'window'} reference 参考系，游戏画面或者窗口
-		 * @param {string} name 可选，sprite的名称，方便通过core.dymCanvas获取
+	/** 创建一个sprite画布
+	 * @param {number} x
+	 * @param {number} y
+	 * @param {number} w
+	 * @param {number} h
+	 * @param {number} z
+	 * @param {'game' | 'window'} reference 参考系，游戏画面或者窗口
+	 * @param {string} name 可选，sprite的名称，方便通过core.dymCanvas获取
+	 */
+	function Sprite(x, y, w, h, z, reference, name) {
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
+		this.zIndex = z;
+		this.reference = reference;
+		this.canvas = null;
+		this.context = null;
+		this.count = 0;
+		this.name = name || '_sprite_' + count;
+		this.style = null;
+		/** 初始化 */
+		this.init = function () {
+			if (reference === 'window') {
+				var canvas = document.createElement('canvas');
+				this.canvas = canvas;
+				this.context = canvas.getContext('2d');
+				canvas.width = w;
+				canvas.height = h;
+				canvas.style.width = w + 'px';
+				canvas.style.height = h + 'px';
+				canvas.style.position = 'absolute';
+				canvas.style.top = y + 'px';
+				canvas.style.left = x + 'px';
+				canvas.style.zIndex = z.toString();
+				document.body.appendChild(canvas);
+				this.style = canvas.style;
+			} else {
+				this.context = core.createCanvas(this.name || '_sprite_' + count, x, y, w, h, z);
+				this.canvas = this.context.canvas;
+				this.canvas.style.pointerEvents = 'auto';
+				this.style = this.canvas.style;
+			}
+			this.count = count;
+			count++;
+		}
+		this.init();
+
+		/** 设置css特效
+		 * @param {string} css
 		 */
-		function Sprite (x, y, w, h, z, reference, name) {
-			this.x = x;
-			this.y = y;
-			this.width = w;
-			this.height = h;
-			this.zIndex = z;
-			this.reference = reference;
-			this.canvas = null;
-			this.context = null;
-			this.count = 0;
-			this.name = name || '_sprite_' + count;
-			this.style = null;
-			/** 初始化 */
-			this.init = function () {
-				if (reference === 'window') {
-					var canvas = document.createElement('canvas');
-					this.canvas = canvas;
-					this.context = canvas.getContext('2d');
-					canvas.width = w;
-					canvas.height = h;
-					canvas.style.width = w + 'px';
-					canvas.style.height = h + 'px';
-					canvas.style.position = 'absolute';
-					canvas.style.top = y + 'px';
-					canvas.style.left = x + 'px';
-					canvas.style.zIndex = z.toString();
-					document.body.appendChild(canvas);
-					this.style = canvas.style;
-				} else {
-					this.context = core.createCanvas(this.name || '_sprite_' + count, x, y, w, h, z);
-					this.canvas = this.context.canvas;
-					this.canvas.style.pointerEvents = 'auto';
-					this.style = this.canvas.style;
+		this.setCss = function (css) {
+			css = css.replace('\n', ';').replace(';;', ';');
+			var effects = css.split(';');
+			var self = this;
+			effects.forEach(function (v) {
+				var content = v.split(':');
+				var name = content[0];
+				var value = content[1];
+				name = name.trim().split('-').reduce(function (pre, curr, i, a) {
+					if (i === 0 && curr !== '') return curr;
+					if (a[0] === '' && i === 1) return curr;
+					return pre + curr.toUpperCase()[0] + curr.slice(1);
+				}, '');
+				var canvas = self.canvas;
+				if (name in canvas.style) canvas.style[name] = value;
+			});
+			return this;
+		}
+
+		/** 
+		 * 移动sprite
+		 * @param {boolean} isDelta 是否是相对位置，如果是，那么sprite会相对于原先的位置进行移动
+		 */
+		this.move = function (x, y, isDelta) {
+			if (x !== undefined && x !== null) this.x = x;
+			if (y !== undefined && y !== null) this.y = y;
+			if (this.reference === 'window') {
+				var ele = this.canvas;
+				ele.style.left = x + (isDelta ? parseFloat(ele.style.left) : 0) + 'px';
+				ele.style.top = y + (isDelta ? parseFloat(ele.style.top) : 0) + 'px';
+			} else core.relocateCanvas(this.context, x, y, isDelta);
+			return this;
+		}
+
+		/** 
+		 * 重新设置sprite的大小
+		 * @param {boolean} styleOnly 是否只修改css效果，如果是，那么将会不高清，如果不是，那么会清空画布
+		 */
+		this.resize = function (w, h, styleOnly) {
+			if (w !== undefined && w !== null) this.w = w;
+			if (h !== undefined && h !== null) this.h = h;
+			if (reference === 'window') {
+				var ele = this.canvas;
+				ele.style.width = w + 'px';
+				ele.style.height = h + 'px';
+				if (!styleOnly) {
+					ele.width = w;
+					ele.height = h;
 				}
-				this.count = count;
-				count++;
-			}
-			this.init();
+			} else core.resizeCanvas(this.context, w, h, styleOnly);
+			return this;
+		}
 
-			/** 设置css特效
-			 * @param {string} css
-			 */
-			this.setCss = function (css) {
-				css = css.replace('\n', ';').replace(';;', ';');
-				var effects = css.split(';');
-				var self = this;
-				effects.forEach(function (v) {
-					var content = v.split(':');
-					var name = content[0];
-					var value = content[1];
-					name = name.trim().split('-').reduce(function (pre, curr, i, a) {
-						if (i === 0 && curr !== '') return curr;
-						if (a[0] === '' && i === 1) return curr;
-						return pre + curr.toUpperCase()[0] + curr.slice(1);
-					}, '');
-					var canvas = self.canvas;
-					if (name in canvas.style) canvas.style[name] = value;
-				});
-				return this;
-			}
-
-			/** 
-			 * 移动sprite
-			 * @param {boolean} isDelta 是否是相对位置，如果是，那么sprite会相对于原先的位置进行移动
-			 */
-			this.move = function (x, y, isDelta) {
-				if (x !== undefined && x !== null) this.x = x;
-				if (y !== undefined && y !== null) this.y = y;
-				if (this.reference === 'window') {
-					var ele = this.canvas;
-					ele.style.left = x + (isDelta ? parseFloat(ele.style.left) : 0) + 'px';
-					ele.style.top = y + (isDelta ? parseFloat(ele.style.top) : 0) + 'px';
-				} else core.relocateCanvas(this.context, x, y, isDelta);
-				return this;
-			}
-
-			/** 
-			 * 重新设置sprite的大小
-			 * @param {boolean} styleOnly 是否只修改css效果，如果是，那么将会不高清，如果不是，那么会清空画布
-			 */
-			this.resize = function (w, h, styleOnly) {
-				if (w !== undefined && w !== null) this.w = w;
-				if (h !== undefined && h !== null) this.h = h;
-				if (reference === 'window') {
-					var ele = this.canvas;
-					ele.style.width = w + 'px';
-					ele.style.height = h + 'px';
-					if (!styleOnly) {
-						ele.width = w;
-						ele.height = h;
-					}
-				} else core.resizeCanvas(this.context, w, h, styleOnly);
-				return this;
-			}
-
-			/**
-			 * 旋转画布
-			 */
-			this.rotate = function (angle, cx, cy) {
-				if (this.reference === 'window') {
-					var left = this.x;
-					var top = this.y;
-					this.canvas.style.transformOrigin = (cx - left) + 'px ' + (cy - top) + 'px';
-					if (angle === 0) {
-						canvas.style.transform = '';
-					} else {
-						canvas.style.transform = 'rotate(' + angle + 'deg)';
-					}
+		/**
+		 * 旋转画布
+		 */
+		this.rotate = function (angle, cx, cy) {
+			if (this.reference === 'window') {
+				var left = this.x;
+				var top = this.y;
+				this.canvas.style.transformOrigin = (cx - left) + 'px ' + (cy - top) + 'px';
+				if (angle === 0) {
+					canvas.style.transform = '';
 				} else {
-					core.rotateCanvas(this.context, angle, cx, cy);
+					canvas.style.transform = 'rotate(' + angle + 'deg)';
 				}
-				return this;
+			} else {
+				core.rotateCanvas(this.context, angle, cx, cy);
 			}
+			return this;
+		}
 
-			/**
-			 * 清除sprite
-			 */
-			this.clear = function (x, y, w, h) {
-				if (this.reference === 'window') {
-					this.context.clearRect(x, y, w, h);
-				} else {
-					core.clearMap(this.context, x, y, w, h);
-				}
-				return this;
+		/**
+		 * 清除sprite
+		 */
+		this.clear = function (x, y, w, h) {
+			if (this.reference === 'window') {
+				this.context.clearRect(x, y, w, h);
+			} else {
+				core.clearMap(this.context, x, y, w, h);
 			}
+			return this;
+		}
 
-			/** 删除 */
-			this.destroy = function () {
-				if (this.reference === 'window') {
-					if (this.canvas) document.body.removeChild(this.canvas);
-				} else {
-					core.deleteCanvas(this.name || '_sprite_' + this.count);
-				}
-			}
-
-			/** 添加事件监听器 */
-			this.addEventListener = function () {
-				this.canvas.addEventListener.apply(this.canvas, arguments);
-			}
-
-			/** 移除事件监听器 */
-			this.removeEventListener = function () {
-				this.canvas.removeEventListener.apply(this.canvas, arguments);
+		/** 删除 */
+		this.destroy = function () {
+			if (this.reference === 'window') {
+				if (this.canvas) document.body.removeChild(this.canvas);
+			} else {
+				core.deleteCanvas(this.name || '_sprite_' + this.count);
 			}
 		}
 
-		window.Sprite = Sprite;
-	},
-	"hotReload": function () {
-		/* ---------- 功能说明 ---------- *
+		/** 添加事件监听器 */
+		this.addEventListener = function () {
+			this.canvas.addEventListener.apply(this.canvas, arguments);
+		}
 
-		1. 当 libs/ main.js index.html 中的任意一个文件被更改后，会自动刷新塔的页面
-		2. 修改楼层文件后自动在塔的页面上显示出来，不需要刷新
-		3. 修改脚本编辑或插件编写后也能自动更新更改的插件或脚本，但不保证不会出问题（一般都不会有问题的
-		4. 修改图块属性、怪物属性等后会自动更新
-		5. 当全塔属性被修改时，会自动刷新塔的页面
-		6. 样板的 styles.css 被修改后也可以直接显示，不需要刷新
-		7. 其余内容修改后不会自动更新也不会刷新
+		/** 移除事件监听器 */
+		this.removeEventListener = function () {
+			this.canvas.removeEventListener.apply(this.canvas, arguments);
+		}
+	}
 
-		/* ---------- 使用方式 ---------- *
+	window.Sprite = Sprite;
+},
+    "hotReload": function () {
+	/* ---------- 功能说明 ---------- *
 
-		1. 前往 https://nodejs.org/en/ 下载node.js的LTS版本（点左边那个绿色按钮）并安装
-		2. 将该插件复制到插件编写中
-		3. 在造塔群的群文件-魔塔样板·改中找到server.js，下载并放到塔的根目录（与启动服务同一级）
-		4. 在该目录下按下shift+鼠标右键（win11只按右键即可），选择在终端打开或在powershell打开
-		5. 运行node server.js即可
+	1. 当 libs/ main.js index.html 中的任意一个文件被更改后，会自动刷新塔的页面
+	2. 修改楼层文件后自动在塔的页面上显示出来，不需要刷新
+	3. 修改脚本编辑或插件编写后也能自动更新更改的插件或脚本，但不保证不会出问题（一般都不会有问题的
+	4. 修改图块属性、怪物属性等后会自动更新
+	5. 当全塔属性被修改时，会自动刷新塔的页面
+	6. 样板的 styles.css 被修改后也可以直接显示，不需要刷新
+	7. 其余内容修改后不会自动更新也不会刷新
 
-		*/
+	/* ---------- 使用方式 ---------- *
 
-		if (main.mode !== 'play' || main.replayChecking) return;
+	1. 前往 https://nodejs.org/en/ 下载node.js的LTS版本（点左边那个绿色按钮）并安装
+	2. 将该插件复制到插件编写中
+	3. 在造塔群的群文件-魔塔样板·改中找到server.js，下载并放到塔的根目录（与启动服务同一级）
+	4. 在该目录下按下shift+鼠标右键（win11只按右键即可），选择在终端打开或在powershell打开
+	5. 运行node server.js即可
 
-		/**
-		 * 发送请求
-		 * @param {string} url
-		 * @param {string} type
-		 * @param {string} data
-		 * @returns {Promise<string>}
-		 */
-		async function post(url, type, data) {
-			const xhr = new XMLHttpRequest();
-			xhr.open(type, url);
-			xhr.send(data);
-			const res = await new Promise(res => {
-				xhr.onload = e => {
-					if (xhr.status !== 200) {
-						console.error(`hot reload: http ${xhr.status}`);
-						res('@error');
-					} else res('success');
-				};
-				xhr.onerror = e => {
+	*/
+
+	if (main.mode !== 'play' || main.replayChecking) return;
+
+	/**
+	 * 发送请求
+	 * @param {string} url
+	 * @param {string} type
+	 * @param {string} data
+	 * @returns {Promise<string>}
+	 */
+	async function post(url, type, data) {
+		const xhr = new XMLHttpRequest();
+		xhr.open(type, url);
+		xhr.send(data);
+		const res = await new Promise(res => {
+			xhr.onload = e => {
+				if (xhr.status !== 200) {
+					console.error(`hot reload: http ${xhr.status}`);
 					res('@error');
-					console.error(`hot reload: error on connection`);
-				};
-			});
-			if (res === 'success') return xhr.response;
-			else return '@error';
-		}
+				} else res('success');
+			};
+			xhr.onerror = e => {
+				res('@error');
+				console.error(`hot reload: error on connection`);
+			};
+		});
+		if (res === 'success') return xhr.response;
+		else return '@error';
+	}
 
-		/**
-		 * 热重载css
-		 * @param {string} data
-		 */
-		function reloadCss(data) {
-			const all = Array.from(document.getElementsByTagName('link'));
-			all.forEach(v => {
-				if (v.rel !== 'stylesheet') return;
-				if (v.href === `http://127.0.0.1:3000/${data}`) {
-					v.remove();
-					const link = document.createElement('link');
-					link.rel = 'stylesheet';
-					link.type = 'text/css';
-					link.href = data;
-					document.head.appendChild(link);
-					console.log(`css hot reload: ${data}`);
-				}
-			});
-		}
-
-		/**
-		 * 热重载楼层
-		 * @param {string} data
-		 */
-		async function reloadFloor(data) {
-			// 首先重新加载main.floors对应的楼层
-			await import(`/project/floors/${data}.js?v=${Date.now()}`);
-			// 然后写入core.floors并解析
-			core.floors[data] = main.floors[data];
-			const floor = core.loadFloor(data);
-			if (core.isPlaying()) {
-				core.status.maps[data] = floor;
-				delete core.status.mapBlockObjs[data];
-				core.extractBlocks(data);
-				if (data === core.status.floorId) {
-					core.drawMap(data);
-					core.setWeather(
-						core.animateFrame.weather.type,
-						core.animateFrame.weather.level
-					);
-				}
-				core.updateStatusBar(true, true);
+	/**
+	 * 热重载css
+	 * @param {string} data
+	 */
+	function reloadCss(data) {
+		const all = Array.from(document.getElementsByTagName('link'));
+		all.forEach(v => {
+			if (v.rel !== 'stylesheet') return;
+			if (v.href === `http://127.0.0.1:3000/${data}`) {
+				v.remove();
+				const link = document.createElement('link');
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = data;
+				document.head.appendChild(link);
+				console.log(`css hot reload: ${data}`);
 			}
-			console.log(`floor hot reload: ${data}`);
-		}
+		});
+	}
 
-		/**
-		 * 热重载脚本编辑及插件编写
-		 * @param {string} data
-		 */
-		async function reloadScript(data) {
-			if (data === 'plugins') {
-				// 插件编写比较好办
-				const before = plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1;
-				// 这里不能用动态导入，因为动态导入会变成模块，变量就不是全局的了
-				const script = document.createElement('script');
-				script.src = `/project/plugins.js?v=${Date.now()}`;
-				document.body.appendChild(script);
-				await new Promise(res => {
-					script.onload = () => res('success');
-				});
-				const after = plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1;
-				// 找到差异的函数
-				for (const id in before) {
-					const fn = before[id];
-					if (typeof fn !== 'function') continue;
-					if (fn.toString() !== after[id]?.toString()) {
+	/**
+	 * 热重载楼层
+	 * @param {string} data
+	 */
+	async function reloadFloor(data) {
+		// 首先重新加载main.floors对应的楼层
+		await import(`/project/floors/${data}.js?v=${Date.now()}`);
+		// 然后写入core.floors并解析
+		core.floors[data] = main.floors[data];
+		const floor = core.loadFloor(data);
+		if (core.isPlaying()) {
+			core.status.maps[data] = floor;
+			delete core.status.mapBlockObjs[data];
+			core.extractBlocks(data);
+			if (data === core.status.floorId) {
+				core.drawMap(data);
+				core.setWeather(
+					core.animateFrame.weather.type,
+					core.animateFrame.weather.level
+				);
+			}
+			core.updateStatusBar(true, true);
+		}
+		console.log(`floor hot reload: ${data}`);
+	}
+
+	/**
+	 * 热重载脚本编辑及插件编写
+	 * @param {string} data
+	 */
+	async function reloadScript(data) {
+		if (data === 'plugins') {
+			// 插件编写比较好办
+			const before = plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1;
+			// 这里不能用动态导入，因为动态导入会变成模块，变量就不是全局的了
+			const script = document.createElement('script');
+			script.src = `/project/plugins.js?v=${Date.now()}`;
+			document.body.appendChild(script);
+			await new Promise(res => {
+				script.onload = () => res('success');
+			});
+			const after = plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1;
+			// 找到差异的函数
+			for (const id in before) {
+				const fn = before[id];
+				if (typeof fn !== 'function') continue;
+				if (fn.toString() !== after[id]?.toString()) {
+					try {
+						core.plugin[id] = after[id];
+						core.plugin[id].call(core.plugin);
+						core.updateStatusBar(true, true);
+						console.log(`plugin hot reload: ${id}`);
+					} catch (e) {
+						console.error(e);
+					}
+				}
+			}
+		} else if (data === 'functions') {
+			// 脚本编辑略微麻烦点
+			const before = functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a;
+			// 这里不能用动态导入，因为动态导入会变成模块，变量就不是全局的了
+			const script = document.createElement('script');
+			script.src = `/project/functions.js?v=${Date.now()}`;
+			document.body.appendChild(script);
+			await new Promise(res => {
+				script.onload = () => res('success');
+			});
+			const after = functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a;
+			// 找到差异的函数
+			for (const mod in before) {
+				const fns = before[mod];
+				for (const id in fns) {
+					const fn = fns[id];
+					if (typeof fn !== 'function' || id === 'hasSpecial')
+						continue;
+					const now = after[mod][id];
+					if (fn.toString() !== now.toString()) {
 						try {
-							core.plugin[id] = after[id];
-							core.plugin[id].call(core.plugin);
+							if (mod === 'events') {
+								core.events.eventdata[id] = now;
+							} else if (mod === 'enemys') {
+								core.enemys.enemydata[id] = now;
+							} else if (mod === 'actions') {
+								core.actions.actionsdata[id] = now;
+							} else if (mod === 'control') {
+								core.control.controldata[id] = now;
+							} else if (mod === 'ui') {
+								core.ui.uidata[id] = now;
+							}
 							core.updateStatusBar(true, true);
-							console.log(`plugin hot reload: ${id}`);
+							console.log(
+								`function hot reload: ${mod}.${id}`
+							);
 						} catch (e) {
 							console.error(e);
 						}
 					}
 				}
-			} else if (data === 'functions') {
-				// 脚本编辑略微麻烦点
-				const before = functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a;
-				// 这里不能用动态导入，因为动态导入会变成模块，变量就不是全局的了
-				const script = document.createElement('script');
-				script.src = `/project/functions.js?v=${Date.now()}`;
-				document.body.appendChild(script);
-				await new Promise(res => {
-					script.onload = () => res('success');
-				});
-				const after = functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a;
-				// 找到差异的函数
-				for (const mod in before) {
-					const fns = before[mod];
-					for (const id in fns) {
-						const fn = fns[id];
-						if (typeof fn !== 'function' || id === 'hasSpecial')
-							continue;
-						const now = after[mod][id];
-						if (fn.toString() !== now.toString()) {
-							try {
-								if (mod === 'events') {
-									core.events.eventdata[id] = now;
-								} else if (mod === 'enemys') {
-									core.enemys.enemydata[id] = now;
-								} else if (mod === 'actions') {
-									core.actions.actionsdata[id] = now;
-								} else if (mod === 'control') {
-									core.control.controldata[id] = now;
-								} else if (mod === 'ui') {
-									core.ui.uidata[id] = now;
-								}
-								core.updateStatusBar(true, true);
-								console.log(
-									`function hot reload: ${mod}.${id}`
-								);
-							} catch (e) {
-								console.error(e);
-							}
-						}
-					}
-				}
 			}
 		}
-
-		/**
-		 * 属性热重载，包括全塔属性等
-		 * @param {string} data
-		 */
-		async function reloadData(data) {
-			const script = document.createElement('script');
-			script.src = `/project/${data}.js?v=${Date.now()}`;
-			document.body.appendChild(script);
-			await new Promise(res => {
-				script.onload = () => res('success');
-			});
-
-			let after;
-			if (data === 'data')
-				after = data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d;
-			if (data === 'enemys')
-				after = enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80;
-			if (data === 'icons')
-				after = icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1;
-			if (data === 'items')
-				after = items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a;
-			if (data === 'maps')
-				after = maps_90f36752_8815_4be8_b32b_d7fad1d0542e;
-			if (data === 'events')
-				after = events_c12a15a8_c380_4b28_8144_256cba95f760;
-
-			if (data === 'enemys') {
-				core.enemys.enemys = after;
-				for (var enemyId in after) {
-					core.enemys.enemys[enemyId].id = enemyId;
-				}
-				core.material.enemys = core.getEnemys();
-			} else if (data === 'icons') {
-				core.icons.icons = after;
-				core.material.icons = core.getIcons();
-			} else if (data === 'items') {
-				core.items.items = after;
-				for (var itemId in after) {
-					core.items.items[itemId].id = itemId;
-				}
-				core.material.items = core.getItems();
-			} else if (data === 'maps') {
-				core.maps.blocksInfo = after;
-				core.status.mapBlockObjs = {};
-				core.status.number2block = {};
-				Object.values(core.status.maps).forEach(v => delete v.blocks);
-				core.extractBlocks();
-				core.setWeather(
-					core.animateFrame.weather.type,
-					core.animateFrame.weather.level
-				);
-				core.drawMap();
-			} else if (data === 'events') {
-				core.events.commonEvent = after.commonEvent;
-			} else if (data === 'data') {
-				location.reload();
-			}
-			core.updateStatusBar(true, true);
-			console.log(`data hot reload: ${data}`);
-		}
-
-		// 初始化
-		(async function () {
-			const data = await post('/reload', 'POST', 'test');
-			if (data === '@error') {
-				console.log(`未检测到node服务，热重载插件将无法使用`);
-			} else {
-				console.log(`热重载插件加载成功`);
-				// reload
-				setInterval(async () => {
-					const res = await post('/reload', 'POST');
-					if (res === '@error') return;
-					if (res === 'true') location.reload();
-					else return;
-				}, 1000);
-
-				// hot reload
-				setInterval(async () => {
-					const res = await post('/hotReload', 'POST');
-					const data = res.split('@@');
-					data.forEach(v => {
-						if (v === '') return;
-						const [type, file] = v.split(':');
-						if (type === 'css') reloadCss(file);
-						if (type === 'data') reloadData(file);
-						if (type === 'floor') reloadFloor(file);
-						if (type === 'script') reloadScript(file);
-					});
-				}, 1000);
-			}
-		})();
 	}
+
+	/**
+	 * 属性热重载，包括全塔属性等
+	 * @param {string} data
+	 */
+	async function reloadData(data) {
+		const script = document.createElement('script');
+		script.src = `/project/${data}.js?v=${Date.now()}`;
+		document.body.appendChild(script);
+		await new Promise(res => {
+			script.onload = () => res('success');
+		});
+
+		let after;
+		if (data === 'data')
+			after = data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d;
+		if (data === 'enemys')
+			after = enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80;
+		if (data === 'icons')
+			after = icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1;
+		if (data === 'items')
+			after = items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a;
+		if (data === 'maps')
+			after = maps_90f36752_8815_4be8_b32b_d7fad1d0542e;
+		if (data === 'events')
+			after = events_c12a15a8_c380_4b28_8144_256cba95f760;
+
+		if (data === 'enemys') {
+			core.enemys.enemys = after;
+			for (var enemyId in after) {
+				core.enemys.enemys[enemyId].id = enemyId;
+			}
+			core.material.enemys = core.getEnemys();
+		} else if (data === 'icons') {
+			core.icons.icons = after;
+			core.material.icons = core.getIcons();
+		} else if (data === 'items') {
+			core.items.items = after;
+			for (var itemId in after) {
+				core.items.items[itemId].id = itemId;
+			}
+			core.material.items = core.getItems();
+		} else if (data === 'maps') {
+			core.maps.blocksInfo = after;
+			core.status.mapBlockObjs = {};
+			core.status.number2block = {};
+			Object.values(core.status.maps).forEach(v => delete v.blocks);
+			core.extractBlocks();
+			core.setWeather(
+				core.animateFrame.weather.type,
+				core.animateFrame.weather.level
+			);
+			core.drawMap();
+		} else if (data === 'events') {
+			core.events.commonEvent = after.commonEvent;
+		} else if (data === 'data') {
+			location.reload();
+		}
+		core.updateStatusBar(true, true);
+		console.log(`data hot reload: ${data}`);
+	}
+
+	// 初始化
+	(async function () {
+		const data = await post('/reload', 'POST', 'test');
+		if (data === '@error') {
+			console.log(`未检测到node服务，热重载插件将无法使用`);
+		} else {
+			console.log(`热重载插件加载成功`);
+			// reload
+			setInterval(async () => {
+				const res = await post('/reload', 'POST');
+				if (res === '@error') return;
+				if (res === 'true') location.reload();
+				else return;
+			}, 1000);
+
+			// hot reload
+			setInterval(async () => {
+				const res = await post('/hotReload', 'POST');
+				const data = res.split('@@');
+				data.forEach(v => {
+					if (v === '') return;
+					const [type, file] = v.split(':');
+					if (type === 'css') reloadCss(file);
+					if (type === 'data') reloadData(file);
+					if (type === 'floor') reloadFloor(file);
+					if (type === 'script') reloadScript(file);
+				});
+			}, 1000);
+		}
+	})();
+},
+    "itemDetails": function () {
+	/* 宝石血瓶左下角显示数值
+	 * 需要将 变量：itemDetail改为true才可正常运行
+	 * 请尽量减少勇士的属性数量，否则可能会出现严重卡顿（划掉，现在你放一万个属性也不会卡）
+	 * 注意：这里的属性必须是core.status.hero里面的，flag无法显示
+	 * 如果不想显示，可以core.setFlag("itemDetail", false);
+	 * 然后再core.getItemDetail();
+	 * 如有bug在大群或造塔群@古祠
+	 */
+
+	// 忽略的道具
+	const ignore = ['superPotion'];
+
+	// 取消注释下面这句可以减少超大地图的判定。
+	// 如果地图宝石过多，可能会略有卡顿，可以尝试取消注释下面这句话来解决。
+	// core.bigmap.threshold = 256;
+	const origin = core.control.updateStatusBar;
+	core.updateStatusBar = core.control.updateStatusBar = function () {
+		if (core.getFlag('__statistics__')) return;
+		else return origin.apply(core.control, arguments);
+	}
+
+	core.control.updateDamage = function (floorId, ctx) {
+		floorId = floorId || core.status.floorId;
+		if (!floorId || core.status.gameOver || main.mode != 'play') return;
+		const onMap = ctx == null;
+
+		// 没有怪物手册
+		if (!core.hasItem('book')) return;
+		core.status.damage.posX = core.bigmap.posX;
+		core.status.damage.posY = core.bigmap.posY;
+		if (!onMap) {
+			const width = core.floors[floorId].width,
+				height = core.floors[floorId].height;
+			// 地图过大的缩略图不绘制显伤
+			if (width * height > core.bigmap.threshold) return;
+		}
+		this._updateDamage_damage(floorId, onMap);
+		this._updateDamage_extraDamage(floorId, onMap);
+		core.getItemDetail(floorId); // 宝石血瓶详细信息
+		this.drawDamage(ctx);
+	};
+	// 获取宝石信息 并绘制
+	this.getItemDetail = function (floorId) {
+		if (!core.getFlag('itemDetail')) return;
+		if (!core.status.thisMap) return;
+		floorId = floorId ?? core.status.thisMap.floorId;
+		const beforeRatio = core.status.thisMap.ratio;
+		core.status.thisMap.ratio = core.status.maps[floorId].ratio;
+		let diff = {};
+		const before = core.status.hero;
+		const hero = core.clone(core.status.hero);
+		const handler = {
+			set(target, key, v) {
+				diff[key] = v - (target[key] || 0);
+				if (!diff[key]) diff[key] = void 0;
+				return true;
+			}
+		};
+		core.status.hero = new Proxy(hero, handler);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			if (
+				block.event.cls !== 'items' ||
+				ignore.includes(block.event.id) ||
+				block.disable
+			)
+				return;
+			const x = block.x,
+				y = block.y;
+			// v2优化，只绘制范围内的部分
+			if (core.bigmap.v2) {
+				if (
+					x < core.bigmap.posX - core.bigmap.extend ||
+					x > core.bigmap.posX + core._SIZE_ + core.bigmap.extend ||
+					y < core.bigmap.posY - core.bigmap.extend ||
+					y > core.bigmap.posY + core._SIZE_ + core.bigmap.extend
+				) {
+					return;
+				}
+			}
+			diff = {};
+			const id = block.event.id;
+			const item = core.material.items[id];
+			if (item.cls === 'equips') {
+				// 装备也显示
+				const diff = item.equip.value ?? {};
+				const per = item.equip.percentage ?? {};
+				for (const name in per) {
+					diff[name + 'per'] = per[name].toString() + '%';
+				}
+				drawItemDetail(diff, x, y);
+				return;
+			}
+			// 跟数据统计原理一样 执行效果 前后比较
+			core.setFlag('__statistics__', true);
+			try {
+				eval(item.itemEffect);
+			} catch (error) {}
+			drawItemDetail(diff, x, y);
+		});
+		core.status.thisMap.ratio = beforeRatio;
+		core.status.hero = before;
+		window.hero = before;
+		window.flags = before.flags;
+	};
+
+	// 绘制
+	function drawItemDetail(diff, x, y) {
+		const px = 32 * x + 2,
+			py = 32 * y + 30;
+		let content = '';
+		// 获得数据和颜色
+		let i = 0;
+		for (const name in diff) {
+			if (!diff[name]) continue;
+			let color = '#fff';
+
+			if (typeof diff[name] === 'number')
+				content = core.formatBigNumber(diff[name], true);
+			else content = diff[name];
+			switch (name) {
+			case 'atk':
+			case 'atkper':
+				color = '#FF7A7A';
+				break;
+			case 'def':
+			case 'defper':
+				color = '#00E6F1';
+				break;
+			case 'mdef':
+			case 'mdefper':
+				color = '#6EFF83';
+				break;
+			case 'hp':
+				color = '#A4FF00';
+				break;
+			case 'hpmax':
+			case 'hpmaxper':
+				color = '#F9FF00';
+				break;
+			case 'mana':
+				color = '#c66';
+				break;
+			}
+			// 绘制
+			core.status.damage.data.push({
+				text: content,
+				px: px,
+				py: py - 10 * i,
+				color: color
+			});
+			i++;
+		}
+	}
+
+},
+    "damageViewer": function () {
+	// 在此增加新插件
+	/////// 用户设置 ///////
+	// 将__enable置为false将关闭插件
+	var __enable = true;
+	// 魔防攻速之类的属性可以在这里加 ['atk', 'def', 'mdef']
+	var heroStatus = ['atk', 'def', 'mana', 'mdef'];
+	// saveHero为true 将会把每次造塔测试时的角色数据存下来 否则会读取初始属性
+	// 用不着可以关了 节约缓存空间 (虽然根本没多少 还没一个存档大
+	// 也可以手动清理 控制台输入core.removeLocalStorage('editorHero')即可
+	var saveHero = true;
+
+	// 下为具体实现 懒得写注释了 大概就是写HTML然后注册交互
+	if (!__enable || main.mode != 'editor') return;
+	core.plugin.initEditorDamage = false;
+	if (heroStatus.length >= 4 && !editor.isMobile) editor.dom.mid2.style.top = 650 + 30 * (heroStatus.length - 3) + 'px';
+	editor.statusRatio = core.getLocalStorage('statusRatio', 1);
+	editor.saveHero = saveHero;
+	editor._heroStatus = heroStatus;
+	editor.dom.mapEdit.appendChild(core.canvas.damage.canvas)
+	var HTML = "<input type='button' value='←'/><input type='button' value='↑'/><input type='button' value='↓'/><input type='button' value='→'/><input type='button' id='bigmapBtn' value='大地图'' style='margin-left: '5px'/>";
+
+	//if (heroStatus.length >= 4 && !editor.isMobile) editor.dom.mid2.style.top = 650 + 30 * (heroStatus.length - 3) + 'px';
+	heroStatus.forEach(function (status) {
+		var id = status + 'set',
+			id2 = status + 'add',
+			id3 = status + 'rec',
+			id4 = status + 'help';
+		HTML += "<br/><input type='text' size='15' id='" + id + "'><input type='button' id='" + id2 + "' value = '+'><input type='button' id='" + id3 + "' value = '-'><input type='button' value='?' id = '" + id4 + "'>"
+	});
+	document.getElementById('viewportButtons').innerHTML = HTML;
+	['set', 'add', 'rec', 'help'].forEach(function (e) {
+		heroStatus.forEach(function (status) {
+			editor.dom[status + e] = document.getElementById(status + e);
+		});
+	});
+	var _hasItem = core.items.hasItem;
+	core.items.hasItem = function (itemId) {
+		if (itemId == 'book' && main.mode == 'editor') return true;
+		return _hasItem.call(core.items, itemId);
+	}
+	if (main.mode == "editor") {
+		var applyList = ["getDamageString", "nextCriticals", "getEnemyInfo", "getEnemyValue"];
+		applyList.forEach(function (name) {
+			var func = core.enemys[name];
+			core.enemys[name] = function () {
+				var args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
+				if (typeof args[0] == "string") args[0] = core.enemys.enemys[args[0]];
+				return func.apply(core.enemys, args);
+			}
+		});
+	}
+
+	////// 获得勇士属性 //////
+	core.control.getStatus = function (name) {
+		if (!core.status.hero) return null;
+		if (name == 'x' || name == 'y' || name == 'direction')
+			return this.getHeroLoc(name);
+		/*if ( main.mode == 'editor' && !core.hasFlag('__statistics__')) {
+			return data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.firstData.hero[name];
+		}*/
+		return core.status.hero[name];
+	}
+
+	core.control.updateDamage = function (floorId, ctx) {
+		floorId = floorId || core.status.floorId;
+		if (!floorId || core.status.gameOver) return;
+		var onMap = ctx == null;
+		if (main.mode == 'editor') {
+			ctx = core.canvas.damage;
+			core.updateCheckBlock();
+			core.clearMap(ctx);
+			if (editor.uivalues.bigmap) return;
+		}
+
+		// 没有怪物手册
+		if (!core.hasItem('book')) return;
+		core.status.damage.posX = core.bigmap.posX;
+		core.status.damage.posY = core.bigmap.posY;
+		if (!onMap) {
+			var width = core.floors[floorId].width,
+				height = core.floors[floorId].height;
+			// 地图过大的缩略图不绘制显伤
+			if (width * height > core.bigmap.threshold) return;
+		}
+		this._updateDamage_damage(floorId, onMap);
+		this._updateDamage_extraDamage(floorId, onMap);
+		this.drawDamage(ctx);
+	}
+
+	core.control.drawDamage = function (ctx) {
+		if (core.status.gameOver || !core.status.damage /* || main.mode != 'play'*/ ) return;
+		var onMap = false;
+		if (ctx == null) {
+			ctx = core.canvas.damage;
+			core.clearMap('damage');
+			onMap = true;
+		}
+
+		if (onMap && core.bigmap.v2) {
+			// 检查是否需要重算...
+			if (Math.abs(core.bigmap.posX - core.status.damage.posX) >= core.bigmap.extend - 1 ||
+				Math.abs(core.bigmap.posY - core.status.damage.posY) >= core.bigmap.extend - 1) {
+				return this.updateDamage();
+			}
+		}
+		return this._drawDamage_draw(ctx, onMap);
+	}
+
+	////// 以x,y的形式返回每个点的事件 //////
+	core.maps.getMapBlocksObj = function (floorId, noCache) {
+		floorId = floorId || core.status.floorId;
+		if (core.status.mapBlockObjs[floorId] && !noCache && main.mode != 'editor')
+			return core.status.mapBlockObjs[floorId];
+
+		var obj = {};
+		core.extractBlocks(floorId);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			obj[block.x + "," + block.y] = block;
+		});
+		core.status.mapBlockObjs[floorId] = obj
+		return obj;
+	}
+
+	this.bignum = function (num, defaultValue) {
+		if (num == null || num == "") return defaultValue;
+		num = num + "";
+		var list = {
+			'w': 1e4,
+			'e': 1e8,
+			'z': 1e12,
+			'j': 1e16,
+			'g': 1e20
+		};
+		// 浮点数问题
+		function checkFloat(num) {
+			if (!core.isset(num)) return 0;
+			num = num + "";
+			var index = num.indexOf(".");
+			if (index < 0) return 0;
+			else return num.slice(index + 1).length;
+		}
+		var index = num.search(/w|e|z|j|g/);
+		if (index <= 0) {
+			num = parseInt(num);
+			if (core.isset(num)) return num;
+			else {
+				alert('不正确的输入');
+				return defaultValue;
+			}
+		}
+		for (; index > 0; index = num.search(/w|e|z|j|g/)) {
+			var p = num[index],
+				q = list[p],
+				n = num.slice(0, index),
+				m = Math.pow(10, checkFloat(n));
+			num = n * m * q / m + num.slice(index + 1);
+		}
+		return parseInt(num);
+	}
+
+	this.updateEditorDamage = function (noSave) {
+		core.updateDamage();
+		heroStatus.forEach(function (status) {
+			editor.dom[status + 'set'].value = core.status.hero[status];
+		});
+		if (!noSave && editor.saveHero) core.setLocalStorage('editorHero', core.status.hero);
+	}
+
+	var _resizeMap = core.maps.resizeMap;
+	core.maps.resizeMap = function (floorId) {
+		_resizeMap.call(core.maps, floorId);
+		if (!core.plugin.initEditorDamage && main.mode == 'editor') {
+			core.plugin.initEditorDamage = true;
+			var editorHero = core.getLocalStorage('editorHero');
+			if (editorHero && saveHero) core.status.hero = editorHero;
+			else core.removeLocalStorage('editorHero');
+			editor._heroStatus.forEach(function (e) {
+				editor.dom[e + 'set'].onchange = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] = core.bignum(this.value, core.status.hero[status]);
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'add'].onclick = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] += editor.statusRatio;
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'rec'].onclick = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] -= editor.statusRatio;
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'help'].onclick = function () {
+					var status = this.id.slice(0, -4),
+						name = core.getStatusLabel(status);
+					var ratio = parseInt(prompt("当前属性:" + name + "\n现在的点击按钮变化值:" + editor.statusRatio + ",请输入按下一次+/-按钮的属性变化量,可以写4w 10.2e这种字母缩写"));
+					if (!core.isset(ratio)) {
+						printe('不合法的输入');
+						return;
+					}
+					editor.statusRatio = ratio;
+					core.setLocalStorage('statusRatio', ratio);
+				}
+			});
+			var _updateMap = editor.updateMap;
+			editor.updateMap = function () {
+				_updateMap.call(editor);
+				core.updateEditorDamage(true);
+			}
+			editor.mode.onmode = function (mode, callback) {
+				if (editor_mode.mode != mode) {
+					if (mode === 'save') {
+						editor_mode.doActionList(editor_mode.mode, editor_mode.actionList, function () {
+							if (callback) callback();
+							core.updateEditorDamage();
+						});
+					}
+					if (editor_mode.mode === 'nextChange' && mode) editor_mode.showMode(mode);
+					if (mode !== 'save') editor_mode.mode = mode;
+					editor_mode.actionList = [];
+				}
+			}
+		}
+	}
+},
+    "minusMorethanZero": function () {
+
+	/**
+	 * 计算非负差值
+	 * @param {number} minuend 被减数
+	 * @param {number} subtrahend 减少的量
+	 * @returns {number} 差值（≥0）
+	 */
+	this.minus = function (minuend, subtrahend) {
+		return Math.max(minuend - subtrahend, 0);
+	};
+
+},
+    "force1Def": function () {
+	// 强制按加1防计算减伤，把return的true改成false取消
+	this.force1Def = function () { return true; }
+}
 }

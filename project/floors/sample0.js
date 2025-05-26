@@ -255,5 +255,7 @@ main.floors.sample0=
     "height": 13,
     "autoEvent": {},
     "beforeBattle": {},
-    "cannotMoveIn": {}
+    "cannotMoveIn": {},
+    "cannotViewMap": true,
+    "cannotMoveDirectly": true
 }

@@ -41,7 +41,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"name": "绿宝石",
 		"text": "，护盾+${core.values.greenGem}",
 		"itemEffect": "core.status.hero.mdef += core.values.greenGem * core.status.thisMap.ratio",
-		"itemEffectTip": "，护盾+${core.values.greenGem * core.status.thisMap.ratio}",
+		"itemEffectTip": "，法抗+${core.values.greenGem * core.status.thisMap.ratio}",
 		"useItemEffect": "core.status.hero.mdef += core.values.greenGem",
 		"canUseItemEffect": "true"
 	},
@@ -49,48 +49,9 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"cls": "items",
 		"name": "黄宝石",
 		"text": "可以进行加点",
-		"itemEffect": "core.status.hero.hp+=1000;core.status.hero.atk+=6;core.status.hero.def+=6;core.status.hero.mdef+=10;",
-		"itemEffectTip": "，全属性提升",
-		"useItemEvent": [
-			{
-				"type": "choices",
-				"choices": [
-					{
-						"text": "攻击+1",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:atk",
-								"operator": "+=",
-								"value": "1"
-							}
-						]
-					},
-					{
-						"text": "防御+2",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:def",
-								"operator": "+=",
-								"value": "2"
-							}
-						]
-					},
-					{
-						"text": "生命+200",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "status:hp",
-								"operator": "+=",
-								"value": "200"
-							}
-						]
-					}
-				]
-			}
-		],
+		"itemEffect": "core.status.hero.mana += core.values.greenGem * core.status.thisMap.ratio;",
+		"itemEffectTip": "，法强+${core.values.greenGem * core.status.thisMap.ratio}",
+		"useItemEvent": null,
 		"canUseItemEffect": "true"
 	},
 	"redPotion": {
@@ -151,11 +112,12 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 			"type": 0,
 			"animate": "sword",
 			"value": {
-				"atk": 10
-			}
+				"atk": 6
+			},
+			"percentage": {}
 		},
-		"itemEffect": "core.status.hero.atk += 10",
-		"itemEffectTip": "，攻击+10"
+		"itemEffect": "core.status.hero.atk += 6",
+		"itemEffectTip": "，攻击+6"
 	},
 	"sword2": {
 		"cls": "items",
@@ -236,8 +198,8 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 				"def": 10
 			}
 		},
-		"itemEffect": "core.status.hero.def += 10",
-		"itemEffectTip": "，防御+10"
+		"itemEffect": "core.status.hero.def += 6",
+		"itemEffectTip": "，防御+6"
 	},
 	"shield2": {
 		"cls": "items",
@@ -303,10 +265,10 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 	},
 	"book": {
 		"cls": "constants",
-		"name": "怪物手册",
+		"name": "手册",
 		"text": "可以查看当前楼层各怪物属性",
 		"hideInToolbox": true,
-		"useItemEffect": "core.ui.drawBook(0);",
+		"useItemEffect": "core.ui.drawBook(0);\ncore.setFlag(\"itemDetail\", true);",
 		"canUseItemEffect": "true"
 	},
 	"fly": {
@@ -319,9 +281,11 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"canUseItemEffect": "(function () {\n\tif (core.flags.flyNearStair && !core.nearStair()) return false;\n\treturn core.status.maps[core.status.floorId].canFlyFrom;\n})();"
 	},
 	"coin": {
-		"cls": "constants",
-		"name": "幸运金币",
-		"text": "持有时打败怪物可得双倍金币"
+		"cls": "items",
+		"name": "大金币",
+		"text": "获得20金币",
+		"itemEffect": "core.status.hero.money += 10",
+		"itemEffectTip": "\"，金币+10\""
 	},
 	"freezeBadge": {
 		"cls": "constants",
@@ -332,7 +296,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 	},
 	"cross": {
 		"cls": "constants",
-		"name": "十字架",
+		"name": "琜",
 		"text": "持有后无视怪物的无敌属性"
 	},
 	"dagger": {
@@ -390,7 +354,8 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"name": "中心对称飞行器",
 		"text": "可以飞向当前楼层中心对称的位置",
 		"useItemEffect": "core.playSound('centerFly.mp3');\ncore.clearMap('hero');\ncore.setHeroLoc('x', core.bigmap.width - 1 - core.getHeroLoc('x'));\ncore.setHeroLoc('y', core.bigmap.height - 1 - core.getHeroLoc('y'));\ncore.drawHero();\ncore.drawTip(core.material.items[itemId].name + '使用成功');",
-		"canUseItemEffect": "(function () {\n\tvar toX = core.bigmap.width - 1 - core.getHeroLoc('x'),\n\t\ttoY = core.bigmap.height - 1 - core.getHeroLoc('y');\n\tvar id = core.getBlockId(toX, toY);\n\treturn id == null;\n})();"
+		"canUseItemEffect": "(function () {\n\tvar toX = core.bigmap.width - 1 - core.getHeroLoc('x'),\n\t\ttoY = core.bigmap.height - 1 - core.getHeroLoc('y');\n\tvar id = core.getBlockId(toX, toY);\n\treturn id == null;\n})();",
+		"itemEffect": null
 	},
 	"upFly": {
 		"cls": "tools",
@@ -520,13 +485,81 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"canUseItemEffect": "true"
 	},
 	"wand": {
-		"cls": "items",
-		"name": "新物品"
+		"cls": "constants",
+		"name": "芧Τ堵痌彻【快捷键：2】",
+		"useItemEffect": "(function () {\n\tvar skillValue = 1001; // 技能的flag:skill值，可用于当前开启技能的判定；对于新技能可以依次改成2，3等等\n\tvar skillName = '芧Τ堵痌彻'; // 技能的名称\n\tcore.autosave(); //自动存档\n\tif (core.getFlag('skill', 0) != skillValue) { // 判断当前是否已经开了技能\n\t\tcore.playSound('打开界面');\n\t\tcore.setFlag('skill', skillValue); // 开技能1\n\t\tcore.setFlag('skillName', skillName); // 设置技能名\n\t\tcore.drawTip('技能已切换为芧Τ堵痌彻');\n\t} else { // 关闭技能\n\t\tcore.setFlag('skill', 1); // 关闭技能状态\n\t\tcore.setFlag('skillName', 'タ盽');\n\t\tcore.playSound('取消');\n\t\tcore.drawTip('技能恢复为タ盽！');\n\t}\n})();",
+		"canUseItemEffect": "true",
+		"text": "破障一击\n效果：将部分攻击力转化为1.5倍无视防御的伤害（向上取整），数值等同于法强，但最多不超过原本的攻击力。"
 	},
 	"pack": {
 		"cls": "items",
 		"name": "钱袋",
 		"itemEffect": "core.status.hero.money += 500",
 		"itemEffectTip": "，金币+500"
+	},
+	"I331": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I332": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I333": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I334": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I335": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I336": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I337": {
+		"cls": "items",
+		"name": "芧Τ堵痌彻",
+		"canUseItemEffect": "true"
+	},
+	"I338": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I339": {
+		"cls": "items",
+		"name": "紫色宝珠",
+		"canUseItemEffect": "true",
+		"itemEffect": "core.status.hero.mana += 5",
+		"itemEffectTip": "，法强+5"
+	},
+	"I340": {
+		"cls": "constants",
+		"name": "タ盽【快捷键：1】",
+		"canUseItemEffect": "true",
+		"text": "全息攻击\n莫诺的初始技能，战斗开始时，额外造成等同于法强2倍的伤害，此伤害无视防御。",
+		"useItemEffect": "(function () {\n\tvar skillValue = 1; // 技能的flag:skill值，可用于当前开启技能的判定；对于新技能可以依次改成2，3等等\n\tvar skillName = 'タ盽'; // 技能的名称\n\tcore.autosave(); //自动存档\n\tif (core.getFlag('skill', 0) != skillValue) { // 判断当前是否已经开了技能，恢复默认技能无前置条件\n\t\tcore.playSound('取消');\n\t\tcore.setFlag('skill', skillValue);\n\t\tcore.setFlag('skillName', skillName);\n\t\tcore.drawTip('当前技能已重置为タ盽');\n\t} else { // 关闭技能\n\t\tcore.playSound('操作失败');\n\t\tcore.drawTip('当前技能已经是タ盽了！');\n\t}\n})();"
+	},
+	"I341": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I342": {
+		"cls": "constants",
+		"name": "み描",
+		"canUseItemEffect": "true",
+		"text": "「窥探虚实」：使用后立即显示当前楼层完整地图，包括所有隐藏房间、陷阱、宝箱及敌人位置，持续至玩家离开本层。\n「预判之眼」：首次遭遇的敌人将被标记，可查看其详细属性（攻击/防御/血量/特殊技能）。\n使用限制：每局游戏仅可携带1个。"
 	}
 }

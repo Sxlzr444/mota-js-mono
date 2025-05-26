@@ -6,7 +6,7 @@ main.floors.sample2=
     "canFlyTo": true,
     "canFlyFrom": true,
     "canUseQuickShop": true,
-    "cannotViewMap": false,
+    "cannotViewMap": true,
     "defaultGround": "ground",
     "images": [],
     "ratio": 1,
@@ -86,5 +86,6 @@ main.floors.sample2=
 ],
     "autoEvent": {},
     "beforeBattle": {},
-    "cannotMoveIn": {}
+    "cannotMoveIn": {},
+    "cannotMoveDirectly": true
 }

@@ -5,14 +5,39 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"sample0",
 			"sample1",
 			"sample2",
-			"MT0"
+			"MT2",
+			"MT4",
+			"MT5",
+			"MT6",
+			"MT7",
+			"MT8",
+			"MT9",
+			"MT10",
+			"MT11",
+			"MT12",
+			"MT13",
+			"MT14",
+			"MT15",
+			"MT17",
+			"MT18",
+			"Mono0",
+			"Mono1",
+			"Mono2",
+			"Mono3",
+			"Mono4",
+			"Mono5",
+			"Mono6",
+			"Mono7",
+			"Mono8"
 		],
 		"floorPartitions": [],
 		"images": [
 			"bear.png",
 			"bg.jpg",
+			"brave.png",
 			"dragon.png",
 			"hero.png",
+			"mono.png",
 			"winskin.png"
 		],
 		"tilesets": [
@@ -27,6 +52,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"bgm.mp3"
 		],
 		"sounds": [
+			"10F.mp3",
+			"3F.mp3",
 			"attack.mp3",
 			"bomb.mp3",
 			"cancel.mp3",
@@ -78,23 +105,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		},
 		"levelChoose": [
 			{
-				"title": "简单",
-				"name": "Easy",
-				"hard": 1,
-				"color": [
-					64,
-					255,
-					85,
-					1
-				],
-				"action": [
-					{
-						"type": "comment",
-						"text": "在这里写该难度需执行的事件"
-					}
-				]
-			},
-			{
 				"title": "普通",
 				"name": "Normal",
 				"hard": 2,
@@ -102,18 +112,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 					255,
 					221,
 					32,
-					1
-				],
-				"action": []
-			},
-			{
-				"title": "困难",
-				"name": "Hard",
-				"hard": 3,
-				"color": [
-					255,
-					68,
-					64,
 					1
 				],
 				"action": []
@@ -163,22 +161,22 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		]
 	},
 	"firstData": {
-		"title": "魔塔样板",
-		"name": "template",
+		"title": "莫诺塔2：莫诺的复仇",
+		"name": "MonoTower2",
 		"version": "Ver 2.10.3",
-		"floorId": "sample0",
+		"floorId": "Mono0",
 		"hero": {
-			"image": "hero.png",
+			"image": "mono.png",
 			"animate": false,
-			"name": "阳光",
+			"name": "莫诺",
 			"lv": 1,
-			"hpmax": 9999,
-			"hp": 1000,
+			"hpmax": -1,
+			"hp": 460,
 			"manamax": -1,
-			"mana": 0,
-			"atk": 100,
-			"def": 100,
-			"mdef": 0,
+			"mana": 1,
+			"atk": 10,
+			"def": 5,
+			"mdef": 1,
 			"money": 0,
 			"exp": 0,
 			"equipment": [],
@@ -190,7 +188,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"loc": {
 				"direction": "up",
 				"x": 6,
-				"y": 10
+				"y": 12
 			},
 			"flags": {},
 			"followers": [],
@@ -548,39 +546,34 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 				"text": "状态栏默认处于隐藏状态；可以使用“显示状态栏”事件进行显示。"
 			}
 		],
-		"startText": [
-			{
-				"type": "comment",
-				"text": "初始剧情"
-			},
-			"Hi，欢迎来到 HTML5 魔塔样板！\n\n本样板由艾之葵制作，可以让你在不会写任何代码\n的情况下也能做出属于自己的H5魔塔！",
-			"这里游戏开始时的剧情。\n\n你可以在这里写上自己的内容。\n赶快来试一试吧！"
-		],
+		"startText": [],
 		"shops": [
 			{
 				"id": "shop1",
-				"text": "\t[贪婪之神,moneyShop]勇敢的武士啊, 给我${20+2*flag:shop1}金币就可以：",
-				"textInList": "1F金币商店",
-				"mustEnable": false,
+				"text": "\t[贪婪之神,moneyShop]给我${flag:kaimonoCost}\r[rgb(241,245,37)]金币\r，我就可以提高一次你的\r[gold]属性\r。加点花费与\r[teal]加点次数\r有关，且不同商店的加点次数是\r[red]累加\r的。\n\n层数越高，商店的加点效果就越好。不过，如果你不在我这里加点，你很可能无法前往下一区，哈哈哈……\n\n累计加点\r[teal]${flag:kaimonoTimes}\r次，当前加点花费\r[rgb(241,245,37)]${flag:kaimonoCost}\r金币，你现在拥有\r[red]${(status:money<flag:kaimonoCost)?(status:money):''}\r\r[green]${(status:money<flag:kaimonoCost)?'':(status:money)}\r金币。\n\n${(flag:kaimono1Met==1)?('1区：< '):null}\r[rgb(160,247,83)]${flag:kaimono1Met?(flag:kaiHpTimesinZone1+' '):null}\r\r[rgb(255,85,85)]${flag:kaimono1Met?(flag:kaiAtkTimesinZone1+' '):null}\r\r[rgb(69,209,224)]${flag:kaimono1Met?(flag:kaiDefTimesinZone1+' '):null}\r${flag:kaimono1Met?('> '):null}\r[rgb(160,247,83)]${flag:kaimono1Met?('生命'+flag:kaiHpPointsinZone1+'点'):null}\r${(flag:kaimono1Met==1)?('、'):null}\r[rgb(255,85,85)]${flag:kaimono1Met?('攻'+flag:kaiAtkPointsinZone1+'点'):null}\r${(flag:kaimono1Met==1)?('、'):null}\r[rgb(69,209,224)]${flag:kaimono1Met?('防'+flag:kaiDefPointsinZone1+'点'):null}\r",
+				"textInList": "贪婪之神（\r[red]${(status:money<flag:kaimonoCost)?(status:money):''}\r\r[green]${(status:money<flag:kaimonoCost)?'':(status:money)}\r/${flag:kaimonoCost})",
+				"mustEnable": true,
 				"disablePreview": false,
 				"choices": [
 					{
-						"text": "生命+800",
-						"need": "status:money>=20+2*flag:shop1",
+						"text": "生命+${flag:kaimonoLevel*200}",
+						"need": "status:money>=flag:kaimonoCost",
+						"icon": "bluePotion",
+						"color": [
+							160,
+							247,
+							83
+						],
 						"action": [
-							{
-								"type": "comment",
-								"text": "新版商店中需要手动扣减金币和增加访问次数"
-							},
 							{
 								"type": "setValue",
 								"name": "status:money",
 								"operator": "-=",
-								"value": "20+2*flag:shop1"
+								"value": "flag:kaimonoCost"
 							},
 							{
 								"type": "setValue",
-								"name": "flag:shop1",
+								"name": "flag:kaimonoTimes",
 								"operator": "+=",
 								"value": "1"
 							},
@@ -588,27 +581,57 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 								"type": "setValue",
 								"name": "status:hp",
 								"operator": "+=",
-								"value": "800"
+								"value": "flag:kaimonoLevel*200"
+							},
+							{
+								"type": "if",
+								"condition": "(flag:kaimonoLevel===1)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "flag:kaimonoTimesinZone1",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiHpTimesinZone1",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiHpPointsinZone1",
+										"operator": "+=",
+										"value": "flag:kaimonoLevel*200"
+									}
+								]
+							},
+							{
+								"type": "insert",
+								"name": "加点花费计算"
 							}
 						]
 					},
 					{
-						"text": "攻击+4",
-						"need": "status:money>=20+2*flag:shop1",
+						"text": "攻击+${flag:kaimonoLevel*2}",
+						"need": "status:money>=flag:kaimonoCost",
+						"icon": "sword0",
+						"color": [
+							255,
+							85,
+							85
+						],
 						"action": [
-							{
-								"type": "comment",
-								"text": "新版商店中需要手动扣减金币和增加访问次数"
-							},
 							{
 								"type": "setValue",
 								"name": "status:money",
 								"operator": "-=",
-								"value": "20+2*flag:shop1"
+								"value": "flag:kaimonoCost"
 							},
 							{
 								"type": "setValue",
-								"name": "flag:shop1",
+								"name": "flag:kaimonoTimes",
 								"operator": "+=",
 								"value": "1"
 							},
@@ -616,64 +639,137 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 								"type": "setValue",
 								"name": "status:atk",
 								"operator": "+=",
-								"value": "4"
+								"value": "flag:kaimonoLevel*2"
+							},
+							{
+								"type": "if",
+								"condition": "(flag:kaimonoLevel===1)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "flag:kaimonoTimesinZone1",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiAtkTimesinZone1",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiAtkPointsinZone1",
+										"operator": "+=",
+										"value": "flag:kaimonoLevel*2"
+									}
+								]
+							},
+							{
+								"type": "insert",
+								"name": "加点花费计算"
 							}
 						]
-					}
-				]
-			},
-			{
-				"id": "shop2",
-				"text": "\t[贪婪之神,expShop]勇敢的武士啊, 给我一定经验就可以：",
-				"textInList": "1F经验商店",
-				"mustEnable": false,
-				"disablePreview": true,
-				"choices": [
+					},
 					{
-						"text": "等级+1（100经验）",
-						"need": "status:exp>=100",
+						"text": "防御+${flag:kaimonoLevel*2}",
+						"need": "status:money>=flag:kaimonoCost",
+						"icon": "shield0",
+						"color": [
+							69,
+							209,
+							224
+						],
 						"action": [
 							{
 								"type": "setValue",
-								"name": "status:exp",
+								"name": "status:money",
 								"operator": "-=",
-								"value": "100"
+								"value": "flag:kaimonoCost"
 							},
 							{
 								"type": "setValue",
-								"name": "status:lv",
+								"name": "flag:kaimonoTimes",
 								"operator": "+=",
 								"value": "1"
 							},
 							{
 								"type": "setValue",
-								"name": "status:hp",
+								"name": "status:def",
 								"operator": "+=",
-								"value": "1000"
+								"value": "flag:kaimonoLevel*2"
+							},
+							{
+								"type": "if",
+								"condition": "(flag:kaimonoLevel===1)",
+								"true": [
+									{
+										"type": "setValue",
+										"name": "flag:kaimonoTimesinZone1",
+										"operator": "+=",
+										"value": "1",
+										"norefresh": true
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiDefTimesinZone1",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:kaiDefPointsinZone1",
+										"operator": "+=",
+										"value": "flag:kaimonoLevel*2"
+									}
+								]
+							},
+							{
+								"type": "insert",
+								"name": "加点花费计算"
 							}
 						]
 					}
 				]
 			},
 			{
-				"id": "itemShop",
-				"item": true,
-				"textInList": "道具商店",
-				"mustEnable": false,
+				"id": "sabis1",
+				"text": "\t[1区赠品领取处,trader]如果你在本区域的贪婪之神处加点\r[teal]3次\r，我会赠送你1个\\i[yellowGem]黄宝石。\n\n如果你开启了更高级别的商店，将\r[red]失去\r获取本赠品的资格。\n\n当前你已加点${flag:kaimonoTimesinZone1}/3次。",
+				"textInList": "1区赠品领取（\r[red]${(flag:kaimonoTimesinZone1<3)?(flag:kaimonoTimesinZone1):null}\r\r[green]${(flag:kaimonoTimesinZone1<3)?null:(flag:kaimonoTimesinZone1)}\r/3）",
+				"mustEnable": true,
+				"disablePreview": false,
 				"choices": [
 					{
-						"id": "yellowKey",
-						"number": 10,
-						"money": "10",
-						"sell": "5"
+						"text": "领取奖品",
+						"need": "flag:kaimonoTimesinZone1>=3",
+						"icon": "yellowGem",
+						"color": [
+							255,
+							255,
+							255
+						],
+						"action": [
+							{
+								"type": "setValue",
+								"name": "status:mana",
+								"operator": "+=",
+								"value": "1"
+							},
+							{
+								"type": "setValue",
+								"name": "flag:zone1Sabised",
+								"value": "true"
+							},
+							{
+								"type": "disableShop",
+								"id": "sabis1"
+							},
+							{
+								"type": "exit"
+							}
+						]
 					}
 				]
-			},
-			{
-				"id": "keyShop",
-				"textInList": "回收钥匙商店",
-				"mustEnable": false,
-				"commonEvent": "回收钥匙商店"
 			}
 		],
 		"levelUp": [
@@ -721,20 +817,20 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"lavaDamage": 100,
 		"poisonDamage": 10,
 		"weakValue": 20,
-		"redGem": 3,
-		"blueGem": 3,
-		"greenGem": 5,
-		"redPotion": 100,
-		"bluePotion": 250,
-		"yellowPotion": 500,
-		"greenPotion": 800,
+		"redGem": 1,
+		"blueGem": 1,
+		"greenGem": 1,
+		"redPotion": 50,
+		"bluePotion": 200,
+		"yellowPotion": 800,
+		"greenPotion": 3200,
 		"breakArmor": 0.9,
 		"counterAttack": 0.1,
 		"purify": 3,
 		"hatred": 2,
 		"animateSpeed": 300,
 		"moveSpeed": 100,
-		"statusCanvasRowsOnMobile": 3,
+		"statusCanvasRowsOnMobile": 5,
 		"floorChangeTime": 100
 	},
 	"flags": {
@@ -747,7 +843,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"enableDef",
 			"enableMDef",
 			"enableMoney",
-			"enableExp",
 			"enableKeys",
 			"enablePZF",
 			"enableSkill"
@@ -761,7 +856,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"enableAddPoint": false,
 		"enableNegativeDamage": false,
 		"betweenAttackMax": false,
-		"useLoop": false,
+		"useLoop": true,
 		"startUsingCanvas": false,
 		"statusCanvas": false,
 		"enableEnemyPoint": true,

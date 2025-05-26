@@ -1,8 +1,8 @@
 var maps_90f36752_8815_4be8_b32b_d7fad1d0542e = 
 {
 	"1": {"cls":"animates","id":"yellowWall","canBreak":true,"animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}}},
-	"2": {"cls":"animates","id":"whiteWall","canBreak":true,"animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}}},
-	"3": {"cls":"animates","id":"blueWall","canBreak":true,"animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}}},
+	"2": {"cls":"animates","id":"whiteWall","canBreak":true,"animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}},"trigger":"openDoor"},
+	"3": {"cls":"animates","id":"blueWall","canBreak":true,"animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}},"trigger":null},
 	"4": {"cls":"animates","id":"star","name":"星空"},
 	"5": {"cls":"animates","id":"lava","name":"岩浆"},
 	"6": {"cls":"animates","id":"ice","doorInfo":{"time":160,"openSound":"破冰镐","closeSound":"door.mp3","keys":{"icePickaxe":1}},"animate":1},
@@ -223,5 +223,20 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"327": {"cls":"enemy48","id":"bearDown"},
 	"328": {"cls":"enemy48","id":"bearLeft"},
 	"329": {"cls":"enemy48","id":"bearRight"},
-	"330": {"cls":"enemy48","id":"bearUp"}
+	"330": {"cls":"enemy48","id":"bearUp"},
+	"331": {"cls":"items","id":"I331"},
+	"332": {"cls":"items","id":"I332"},
+	"333": {"cls":"items","id":"I333"},
+	"334": {"cls":"items","id":"I334"},
+	"335": {"cls":"items","id":"I335"},
+	"336": {"cls":"items","id":"I336"},
+	"337": {"cls":"items","id":"I337"},
+	"338": {"cls":"items","id":"I338"},
+	"339": {"cls":"items","id":"I339"},
+	"340": {"cls":"items","id":"I340"},
+	"341": {"cls":"items","id":"I341"},
+	"342": {"cls":"items","id":"I342"},
+	"343": {"cls":"animates","id":"fakeWall","trigger":"openDoor","doorInfo":{"time":200,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}},"animate":1},
+	"344": {"cls":"animates","id":"A344","name":"不需要钥匙的机关门","trigger":"openDoor","animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{}}},
+	"345": {"cls":"npcs","id":"N345","name":"辅导资料"}
 }

@@ -6,7 +6,7 @@ main.floors.MT0=
     "canFlyTo": true,
     "canFlyFrom": true,
     "canUseQuickShop": true,
-    "cannotViewMap": false,
+    "cannotViewMap": true,
     "defaultGround": "ground",
     "images": [],
     "ratio": 1,
@@ -25,7 +25,7 @@ main.floors.MT0=
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
 ],
-    "firstArrive": [],
+    "firstArrive": null,
     "parallelDo": "",
     "events": {},
     "changeFloor": {},
@@ -41,5 +41,14 @@ main.floors.MT0=
 ],
     "width": 13,
     "height": 13,
-    "autoEvent": {}
+    "autoEvent": {},
+    "beforeBattle": {},
+    "cannotMoveIn": {},
+    "eachArrive": [
+        {
+            "type": "function",
+            "function": "function(){\nif (core.getFlag('skill', 0) == 1001) {  \t\tcore.setFlag('skill', 0);  \t\tcore.setFlag('skillName', '无');\t\tcore.playSound('取消');\t\tcore.drawTip('本次芧Τ堵痌彻使用机会已失效!'); }\n}"
+        }
+    ],
+    "cannotMoveDirectly": true
 }

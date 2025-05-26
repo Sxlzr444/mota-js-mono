@@ -626,5 +626,8 @@ main.floors.sample1=
     },
     "width": 13,
     "height": 13,
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {},
+    "cannotViewMap": true,
+    "cannotMoveDirectly": true
 }

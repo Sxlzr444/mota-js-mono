@@ -94,7 +94,9 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"rightPortal": 25,
 		"upPortal": 26,
 		"ice": 27,
-		"magentaWall": 28
+		"magentaWall": 28,
+		"fakeWall": 29,
+		"A344": 30
 	},
 	"npcs": {
 		"man": 0,
@@ -110,7 +112,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"moneyShop": 10,
 		"princess": 11,
 		"greenMan": 12,
-		"blueTrader": 13
+		"blueTrader": 13,
+		"N345": 14
 	},
 	"npc48": {
 		"npc0": 0,
@@ -260,7 +263,19 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"jumpShoes": 49,
 		"skill1": 30,
 		"wand": 10,
-		"pack": 46
+		"pack": 46,
+		"I331": 5,
+		"I332": 7,
+		"I333": 26,
+		"I334": 31,
+		"I335": 32,
+		"I336": 34,
+		"I337": 35,
+		"I338": 36,
+		"I339": 37,
+		"I340": 38,
+		"I341": 39,
+		"I342": 62
 	},
 	"autotile": {
 		"autotile": 0,
