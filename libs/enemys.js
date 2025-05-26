@@ -374,6 +374,7 @@ enemys.prototype._nextCriticals_useTurn = function (enemy, info, number, x, y, f
 enemys.prototype.getDefDamage = function (enemy, k, x, y, floorId) {
     if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
     k = k || 1;
+    if (core.force1Def==true) k=1;
     var nowDamage = this._getDamage(enemy, null, x, y, floorId);
     var nextDamage = this._getDamage(enemy, { "def": core.status.hero.def + k }, x, y, floorId);
     if (nowDamage == null || nextDamage == null) return "???";
